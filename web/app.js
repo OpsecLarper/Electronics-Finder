@@ -92,6 +92,11 @@ function stockPill(o) {
   if (o.inStock === false) return `<span class="pill bad">Out of stock</span>`;
   return `<span class="pill subtle">Stock unknown</span>`;
 }
+function ratingPill(o) {
+  if (!o.rating && !o.sold) return "";
+  const n = o.sold ? o.sold : o.reviews ? o.reviews.toLocaleString() + " reviews" : "";
+  return `<span class="pill subtle" title="Listing rating">${o.rating ? `<span style="color:#ffd76a">★</span> ${o.rating.toFixed(1)}` : ""}${o.rating && n ? " · " : ""}${esc(n)}</span>`;
+}
 function thumb(o, cls = "thumb") {
   return o.image ? `<img class="${cls}" loading="lazy" src="${esc(o.image)}" alt="" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=&quot;${cls} ph&quot;>◇</div>'">`
     : `<div class="${cls} ph">◇</div>`;
@@ -246,7 +251,7 @@ function renderByStore(offers) {
       <div class="offer-mini" data-url="${esc(best.url)}" style="cursor:pointer">
         ${thumb(best)}
         <div style="min-width:0">
-          <div class="p">${priceLine(best)} ${stockPill(best)}</div>
+          <div class="p">${priceLine(best)} ${stockPill(best)} ${ratingPill(best)}</div>
           <div class="t">${esc(best.title)}</div>
           ${more.length ? `<button class="link" data-toggle>+${more.length} more from ${esc(st.name)}</button>` : ""}
         </div>
@@ -256,7 +261,7 @@ function renderByStore(offers) {
         <button class="btn primary sm" data-url="${esc(best.url)}" style="margin-top:14px">View ↗</button>
       </div>
       ${more.length ? `<div class="more-offers">${more.map(o => `<div class="offer-mini" data-url="${esc(o.url)}">${thumb(o)}
-        <div style="min-width:0;flex:1"><div class="p">${priceLine(o)} ${stockPill(o)}</div><div class="t">${esc(o.title)}</div></div>${ring(o.overall, "", 44)}</div>`).join("")}</div>` : ""}
+        <div style="min-width:0;flex:1"><div class="p">${priceLine(o)} ${stockPill(o)} ${ratingPill(o)}</div><div class="t">${esc(o.title)}</div></div>${ring(o.overall, "", 44)}</div>`).join("")}</div>` : ""}
     </div>`;
   }).join("");
 }
@@ -267,7 +272,7 @@ function renderCards(offers) {
     const st = state.stores[o.storeId] || { name: o.storeId };
     return `<div class="card glass" data-url="${esc(o.url)}" style="animation-delay:${Math.min(i, 20) * 25}ms">
       <div class="img ${o.image ? "" : "ph"}">${o.image ? `<img loading="lazy" src="${esc(o.image)}" alt="" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('ph');this.outerHTML='◇'">` : "◇"}</div>
-      <div class="tags"><span class="pill accent">${esc(st.name)}</span>${stockPill(o)}${o.condition && o.condition !== "New" ? `<span class="pill warn">${esc(o.condition)}</span>` : ""}</div>
+      <div class="tags"><span class="pill accent">${esc(st.name)}</span>${stockPill(o)}${ratingPill(o)}${o.condition && o.condition !== "New" ? `<span class="pill warn">${esc(o.condition)}</span>` : ""}</div>
       <div class="t">${esc(o.title)}</div>
       <div class="foot"><div><div class="p">${fmt(o.usd)}</div>${stars(o.sellerTrust ?? st.trust)}</div>${ring(o.overall, "", 46)}</div>
     </div>`;

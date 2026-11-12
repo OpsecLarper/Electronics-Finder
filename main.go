@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var version = "1.0.0"
+var version = "1.1.0"
 
 func main() {
 	browser := flag.Bool("browser", false, "open the UI in your default browser instead of an app window")

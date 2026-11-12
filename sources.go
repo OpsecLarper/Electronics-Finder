@@ -30,6 +30,9 @@ type Offer struct {
 	SellerPct   float64  `json:"sellerPct,omitempty"`   // marketplace seller positive feedback %
 	SellerTrust *float64 `json:"sellerTrust,omitempty"` // 1–5 override of store trust for this seller
 	Condition   string   `json:"condition,omitempty"`
+	Rating      float64  `json:"rating,omitempty"`  // product star rating (marketplaces)
+	Reviews     int      `json:"reviews,omitempty"` // review or sold count
+	Sold        string   `json:"sold,omitempty"`
 }
 
 // Source fetches live offers from one store.
@@ -51,6 +54,8 @@ var sources = []Source{
 	&mouserSource{},
 	&digikeySource{},
 	&ebaySource{},
+	amazonSource{},
+	aliSource{},
 }
 
 const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
