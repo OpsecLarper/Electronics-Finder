@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Electronics Finder</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div>
+  <div class="grid"></div>
+</div>
+<svg id="filters" width="0" height="0" style="position:absolute" aria-hidden="true"><defs></defs></svg>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="icon.png" alt="" class="logo">
+    <div>
+      <div class="brand-name">Electronics Finder</div>
+      <div class="brand-sub">Compares prices at trusted stores</div>
+    </div>
+  </div>
+  <nav class="seg glass liquid" id="nav">
+    <span class="seg-thumb"></span>
+    <button data-view="search" class="active">Search</button>
+    <button data-view="stores">Stores</button>
+    <button data-view="settings">Settings</button>
+  </nav>
+  <div class="top-right">
+    <span class="pill subtle" id="regionPill" title="Your region and currency"></span>
+  </div>
+</header>
+
+<main>
+  <!-- SEARCH VIEW -->
+  <section id="view-search" class="view active">
+    <div class="hero" id="hero">
+      <h1>Find the best place to buy <span class="grad">any part</span>.</h1>
+      <p class="lead">Searches official distributors, maker stores and marketplaces, then ranks every result by price, trust, shipping and stock.</p>
+    </div>
+
+    <form class="search glass liquid" id="searchForm" autocomplete="off">
+      <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="text" placeholder="Try “ESP32-S3”, “CC1101”, “N20 gear motor”, “SG90 servo”…" spellcheck="false">
+      <button type="submit" class="btn primary" id="goBtn">Search</button>
+    </form>
+    <div class="chips" id="chips"></div>
+
+    <div id="statusBar" class="status-bar hidden"></div>
+
+    <div id="results" class="hidden">
+      <div class="section-head">
+        <h2>Top picks</h2>
+        <span class="muted" id="summary"></span>
+      </div>
+      <div class="picks" id="picks"></div>
+
+      <div class="toolbar glass">
+        <div class="seg small" id="modeSeg">
+          <button data-mode="stores" class="active">By store</button>
+          <button data-mode="all">All listings</button>
+        </div>
+        <label class="field">Sort
+          <select id="sortSel">
+            <option value="overall">Best overall</option>
+            <option value="price">Lowest price</option>
+            <option value="trust">Most trusted</option>
+            <option value="shipping">Fastest shipping</option>
+          </select>
+        </label>
+        <label class="toggle"><input type="checkbox" id="stockOnly"><span></span>In stock only</label>
+        <button class="btn ghost" id="weightsBtn" type="button">
+          <svg class="ico sm" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+          What matters to you
+        </button>
+      </div>
+
+      <div class="weights glass hidden" id="weights"></div>
+
+      <div id="list"></div>
+
+      <div class="section-head" id="alsoHead">
+        <h2>Also worth checking</h2>
+        <span class="muted">We can't search these stores directly. Click to open their results for your search.</span>
+      </div>
+      <div class="also" id="also"></div>
+    </div>
+  </section>
+
+  <!-- STORES VIEW -->
+  <section id="view-stores" class="view">
+    <div class="section-head">
+      <h2>Store directory</h2>
+      <span class="muted">Editorial ratings, out of 5. Live results also factor in real prices and stock.</span>
+    </div>
+    <div class="store-grid" id="storeGrid"></div>
+  </section>
+
+  <!-- SETTINGS VIEW -->
+  <section id="view-settings" class="view">
+    <div class="settings-wrap">
+      <div class="glass card pad">
+        <h3>Location &amp; currency</h3>
+        <p class="muted">Your region affects shipping ratings and which eBay site we search.</p>
+        <div class="form-row">
+          <label class="field col">Region
+            <select id="setRegion">
+              <option value="NA">North America</option>
+              <option value="UK">United Kingdom</option>
+              <option value="EU">Europe</option>
+              <option value="ASIA">Asia</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </label>
+          <label class="field col">Display currency
+            <select id="setCurrency"></select>
+          </label>
+        </div>
+        <p class="muted tiny" id="fxNote"></p>
+      </div>
+
+      <div class="glass card pad">
+        <h3>Optional API keys <span class="pill subtle">free</span></h3>
+        <p class="muted">Store results work without any keys. Adding these free keys enables live prices and stock from authorized distributors and eBay. Keys are saved only on this PC.</p>
+        <div class="key-block">
+          <div class="key-title">Mouser <a href="#" data-ext="https://www.mouser.com/api-hub/">Get a Search API key ↗</a></div>
+          <input id="setMouser" type="password" placeholder="Mouser Search API key">
+        </div>
+        <div class="key-block">
+          <div class="key-title">DigiKey <a href="#" data-ext="https://developer.digikey.com/">Create an app (Product Information v4) ↗</a></div>
+          <div class="form-row">
+            <input id="setDkId" type="password" placeholder="Client ID">
+            <input id="setDkSecret" type="password" placeholder="Client Secret">
+          </div>
+        </div>
+        <div class="key-block">
+          <div class="key-title">eBay <a href="#" data-ext="https://developer.ebay.com/my/keys">Get production keys ↗</a></div>
+          <div class="form-row">
+            <input id="setEbayId" type="password" placeholder="App ID (Client ID)">
+            <input id="setEbaySecret" type="password" placeholder="Cert ID (Client Secret)">
+          </div>
+        </div>
+      </div>
+
+      <div class="glass card pad">
+        <h3>Live sources</h3>
+        <p class="muted">Turn off any stores you don't want searched.</p>
+        <div id="srcToggles" class="src-toggles"></div>
+      </div>
+
+      <div class="save-row">
+        <span class="muted" id="saveMsg"></span>
+        <button class="btn primary" id="saveBtn">Save settings</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast glass hidden" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
